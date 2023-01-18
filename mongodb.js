@@ -48,18 +48,36 @@ const client = new MongoClient(connectionURL)
 
 // findUser()
 
-const findTask = async () => {
-    try {
-        const db = client.db(databaseName)
-        const tasks = db.collection('tasks')
+// const findTask = async () => {
+//     try {
+//         const db = client.db(databaseName)
+//         const tasks = db.collection('tasks')
 
-        const task = await tasks.findOne({_id: ObjectId("63c7a2f00078754a3a4ef68d")})
-        const incompletedTasks = await tasks.find({completed: false}).toArray()
-        console.log("🚀 ~ file: mongodb.js:58 ~ findTask ~ incompletedTasks", incompletedTasks)
-        console.log("🚀 ~ file: mongodb.js:57 ~ findTask ~ task", task)
-    } catch {
-        console.log('Error')
-    }
-}
+//         const task = await tasks.findOne({_id: ObjectId("63c7a2f00078754a3a4ef68d")})
+//         const incompletedTasks = await tasks.find({completed: false}).toArray()
+//         console.log("🚀 ~ file: mongodb.js:58 ~ findTask ~ incompletedTasks", incompletedTasks)
+//         console.log("🚀 ~ file: mongodb.js:57 ~ findTask ~ task", task)
+//     } catch {
+//         console.log('Error')
+//     }
+// }
 
-findTask()
+// findTask()
+
+const updateMany = async () => {
+    const db = client.db(databaseName)
+        
+    const tasks = db.collection('tasks')
+    const task = tasks.updateMany({
+        completed: false
+    }, {
+        $set: {
+            completed: true
+        }
+    }).then((result) => {
+        console.log(result.modifiedCount)
+    }).catch((error) => {
+        console.log(error)
+    })
+} 
+updateMany()

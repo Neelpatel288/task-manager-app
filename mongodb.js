@@ -31,20 +31,20 @@ const databaseName = 'task-manager'
 
 const client = new MongoClient(connectionURL)
 
-// const findUser = async () => {
-//     try {
-//         const db = client.db(databaseName)
-//         const users = db.collection('users')
-//         // const query = {_id: ObjectId("63c7c656872c3e0ad64b9127")}
+const findUser = async () => {
+    try {
+        const db = client.db(databaseName)
+        const users = db.collection('users')
+        // const query = {_id: ObjectId("63c7c656872c3e0ad64b9127")}
 
-//         // const findUser1 = await users.findOne(query)
-//         const findUser2 = await users.find({age : 22}).toArray()
-//         console.log("🚀 ~ file: mongodb.js:42 ~ findUser ~ findUser2", findUser2)
+        // const findUser1 = await users.findOne(query)
+        const findUser2 = await users.find({age : 22}).toArray()
+        console.log("🚀 ~ file: mongodb.js:42 ~ findUser ~ findUser2", findUser2)
 
-//     } catch (e) {
-//         // print (e.message)
-//     }
-// }
+    } catch (e) {
+        // print (e.message)
+    }
+}
 
 // findUser()
 
@@ -64,7 +64,25 @@ const client = new MongoClient(connectionURL)
 
 // findTask()
 
-const updateMany = async () => {
+const updateUser = () => {
+    const db = client.db(databaseName)
+        
+    const users = db.collection('users')
+    const user = users.updateOne({
+        _id: ObjectId('63c7c6f8328e166fc0d46578')
+    }, {
+        $inc: {
+            age: 1
+        }
+    }).then((result) => {
+        console.log(result)
+    }).catch((error) => {
+        console.log(error)
+    })
+} 
+// updateUser()
+
+const updateManyUser = () => {
     const db = client.db(databaseName)
         
     const tasks = db.collection('tasks')
@@ -80,4 +98,34 @@ const updateMany = async () => {
         console.log(error)
     })
 } 
-updateMany()
+
+// updateManyUser()
+
+const deleteUsers = () => {
+    const db = client.db(databaseName)
+    const users = db.collection('users')
+    users.deleteMany({
+        age:28
+    }).then((result) => {
+        console.log(result)
+    }).catch((error) => {
+        console.log(error)
+    })
+}
+
+// deleteUsers()
+
+const deleteTasks = () => {
+    const db = client.db(databaseName)
+    const tasks = db.collection('tasks')
+
+    tasks.deleteOne({
+        description: 'Buy phone'
+    }).then((result) => {
+        console.log(result)
+    }).catch((error) => {
+        console.log(error)
+    })
+}
+
+// deleteTasks()

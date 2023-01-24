@@ -3,7 +3,7 @@ import { postUser, getUsers, getUser, patchUser, deleteUser } from './user-servi
 import { checkValidIdLength, validateoperation } from '../../helper.js'
 export const userRouter = new express.Router()
 
-userRouter.post('/user', async (req, res) => {   
+userRouter.post('/', async (req, res) => {   
     try {
         const user = await postUser(req.body)
         res.status(201).send(user)
@@ -12,7 +12,7 @@ userRouter.post('/user', async (req, res) => {
     }
 })
 
-userRouter.get('/users', async (req, res) => {
+userRouter.get('/', async (req, res) => {
 
     try {
         const users = await getUsers()
@@ -23,7 +23,7 @@ userRouter.get('/users', async (req, res) => {
     }
 })
 
-userRouter.get('/user/:id', async (req, res) => {
+userRouter.get('/:id', async (req, res) => {
     const checkID = checkValidIdLength(req.params.id)
     if (!checkID) {
         return res.send({message: 'Id length must be 24'})
@@ -40,7 +40,7 @@ userRouter.get('/user/:id', async (req, res) => {
     }
 })
 
-userRouter.patch('/user/:id', async (req, res) => {
+userRouter.patch('/:id', async (req, res) => {
 
     const checkID = checkValidIdLength(req.params.id)
     if (!checkID) {
@@ -63,7 +63,7 @@ userRouter.patch('/user/:id', async (req, res) => {
     }
 })
 
-userRouter.delete('/user/:id', async (req,res) => {
+userRouter.delete('/:id', async (req,res) => {
     const checkID = checkValidIdLength(req.params.id)
     if (!checkID) {
         return res.send({message: 'Id length must be 24'})

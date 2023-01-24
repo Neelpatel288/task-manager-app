@@ -3,7 +3,7 @@ import { postTask, getTask, getTasks, patchTask, deleteTask } from './task-servi
 import { checkValidIdLength, validateoperation } from '../../helper.js'
 export const taskRouter = new express.Router()
 
-taskRouter.post('/task', (req, res) => {
+taskRouter.post('/', (req, res) => {
     try {
         const task = postTask(req.body)
         res.status(201).send(task)
@@ -12,7 +12,7 @@ taskRouter.post('/task', (req, res) => {
     }
 })
 
-taskRouter.get('/task/:id', async (req, res) => {
+taskRouter.get('/:id', async (req, res) => {
     const checkID = checkValidIdLength(req.params.id)
     if (!checkID) {
         return res.send({message: 'Id length must be 24'})
@@ -30,7 +30,7 @@ taskRouter.get('/task/:id', async (req, res) => {
     }
 })
 
-taskRouter.get('/tasks', async (req, res) => {
+taskRouter.get('/', async (req, res) => {
     try{
         const tasks = await getTasks()
         res.send(tasks)
@@ -40,7 +40,7 @@ taskRouter.get('/tasks', async (req, res) => {
     }
 })
 
-taskRouter.patch('/task/:id', async (req, res) => {
+taskRouter.patch('/:id', async (req, res) => {
     const checkID = checkValidIdLength(req.params.id)
     if (!checkID) {
         return res.send({message: 'Id length must be 24'})
@@ -64,7 +64,7 @@ taskRouter.patch('/task/:id', async (req, res) => {
     }
 })
 
-taskRouter.delete('/task/:id', async (req, res) => {
+taskRouter.delete('/:id', async (req, res) => {
     const checkID = checkValidIdLength(req.params.id)
     if (!checkID) {
         return res.send({message: 'Id length must be 24'})

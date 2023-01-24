@@ -1,7 +1,7 @@
 import express from 'express'
 import ('./db/mongoose.js')
-import { userRouter } from './routers/user.js'
-import { taskRouter } from './routers/task.js'
+import { userRouter } from './routers/user/user-router.js'
+import { taskRouter } from './routers/task/task-router.js'
 
 
 const app = express()

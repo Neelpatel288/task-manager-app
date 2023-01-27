@@ -1,8 +1,13 @@
 import { User } from '../../models/user.js'
 
-export const postUser = (body) => {
-    const user = new User(body)
-    user.save()
+export const postUser = async (body) => {
+    const user = await User.create(body)
+    return user
+}
+
+export const userLogin = async (email, password) => {
+    const user = await User.findByCredentials(email, password)
+    // const token = await user.generateAuthToken()
     return user
 }
 
@@ -16,8 +21,14 @@ export const getUser = (id) => {
     return user
 }
 
-export const patchUser = (id, body, options) => {
-    const user = User.findByIdAndUpdate(id, body, options)
+export const patchUser = async (id, body) => {
+
+    const updates = Object.keys(body)
+    let user = await User.findById(id)
+    updates.forEach((update) => user[update] = body[update])
+    
+    user = await user.save()
+
     return user
 }
 

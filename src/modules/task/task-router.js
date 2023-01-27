@@ -52,7 +52,7 @@ taskRouter.patch('/:id', async (req, res) => {
     }
 
     try {
-        const task = await patchTask(req.params.id, req.body, {new: true, runValidators: true})
+        const task = await patchTask(req.params.id, req.body)
         if (!task) {
             return res.status(404).send({message: 'Not found'})
         }

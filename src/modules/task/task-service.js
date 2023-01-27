@@ -16,8 +16,15 @@ export const getTask = (id) => {
     return task
 }
 
-export const patchTask = (id, body, option) => {
-    const task = Task.findByIdAndUpdate(id, body, option)
+export const patchTask = async (id, body) => {
+    const Updates = Object.keys(body)
+    let task = await Task.findById(id)
+    console.log("🚀 ~ file: task-service.js:22 ~ patchTask ~ task", task)
+
+    Updates.forEach((update) => task[update] = body[update])
+
+    task = await task.save()
+
     return task
 }
 

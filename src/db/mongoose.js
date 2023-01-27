@@ -1,9 +1,7 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
-mongoose.connect('mongodb://127.0.0.1:27017/task-manager-api')
+mongoose.connect(process.env.DB_URL);
 
-
-              
 // const me = new User({
 //     name: '  Neel   ',
 //     email: '  Nel@MEad.io  ',
@@ -16,8 +14,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/task-manager-api')
 // }).catch((error) => {
 //     console.log('Error!', error)
 // })
-
-
 
 // const newTask = new Task({
 //     description: '  Eat lunch  ',

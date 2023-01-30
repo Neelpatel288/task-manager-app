@@ -1,17 +1,11 @@
 import { Task } from "../../models/task.js";
 
-export const postTask = (body, id) => {
-  const task = new Task({
+export const postTask = async (body, id) => {
+  const task = await Task.create({
     ...body,
     owner: id,
   });
-  task.save();
   return task;
-};
-
-export const getTasks = (owner) => {
-  const tasks = Task.find({ owner });
-  return tasks;
 };
 
 export const getTask = (_id, owner) => {

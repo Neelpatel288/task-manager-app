@@ -1,5 +1,6 @@
 export const errorMessages = {
   inValidUpdates: "Invalid updates",
   notFound: "Not found",
-  ProvideValidId: "Id length must be 24",
+  provideValidId: "Id length must be 24",
+  pleaseAuth: "Please authenticate",
 };

@@ -19,9 +19,9 @@ export const getTask = (_id, owner) => {
   return task;
 };
 
-export const patchTask = async (id, body) => {
+export const patchTask = async (_id, owner, body) => {
   const Updates = Object.keys(body);
-  let task = await Task.findById(id);
+  let task = await Task.findOne({ _id, owner });
 
   Updates.forEach((update) => (task[update] = body[update]));
 
@@ -30,7 +30,7 @@ export const patchTask = async (id, body) => {
   return task;
 };
 
-export const deleteTask = (id) => {
-  const task = Task.findByIdAndDelete(id);
+export const deleteTask = (_id, owner) => {
+  const task = Task.findOneAndDelete({ _id, owner });
   return task;
 };

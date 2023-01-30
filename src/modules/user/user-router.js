@@ -59,15 +59,15 @@ userRouter.get("/me", auth, async (req, res) => {
 userRouter.patch("/me", auth, async (req, res) => {
   try {
     if (!validateoperation(req.body, ["name", "email", "password", "age"])) {
-      // return res.status(400).send({ error: errorMessages.inValidUpdates });
       throw new Error(errorMessages.inValidUpdates);
     }
 
     const user = await patchUser(req.user, req.body);
     res.send(user);
   } catch (e) {
-    console.log(e);
-    res.status(400).send({ message: e.message });
+    console.log(e.message);
+    const { message } = e;
+    res.status(400).send({ message, status: 400 });
   }
 });
 

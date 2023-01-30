@@ -6,7 +6,7 @@ import {
   patchTask,
   deleteTask,
 } from "./task-service.js";
-import { validateoperation } from "../../helper.js";
+import { checkValidIdLength, validateoperation } from "../../helper.js";
 import { auth } from "../../middleware/auth.js";
 import { errorMessages } from "../../errorMessages.js";
 export const taskRouter = new express.Router();
@@ -34,59 +34,66 @@ taskRouter.get("/all", auth, async (req, res) => {
 taskRouter.get("/:id", auth, async (req, res) => {
   const ownerId = req.user._id;
   const taskId = req.params.id;
-  if (taskId.lenght !== 24) {
-    throw new Error({ message: errorMessages.ProvideValidId });
-  }
-
+  console.log(req.params.id.length);
   try {
+    if (!checkValidIdLength === 24) {
+      throw new Error(errorMessages.provideValidId);
+    }
+
     const task = await getTask(taskId, ownerId);
     if (!task) {
-      throw new Error({ message: errorMessages.notFound });
+      throw new Error(errorMessages.notFound);
     }
-    res.send(task);
+    res.send({ data: task, count: task.length });
   } catch (e) {
-    console.log(e);
-    res.status(500).send();
+    console.log(e.message);
+    const { message } = e;
+    res.status(400).send({ message, status: 400 });
   }
 });
 
-taskRouter.patch("/:id", async (req, res) => {
+taskRouter.patch("/:id", auth, async (req, res) => {
   const taskId = req.params.id;
-  if (taskId.lenght !== 24) {
-    throw new Error({ message: errorMessages.ProvideValidId });
-  }
-
-  if (!validateoperation(req.body, ["description", "completed"])) {
-    throw new Error(errorMessages.inValidUpdates);
-  }
-
+  const ownerId = req.user._id;
   try {
-    const task = await patchTask(req.params.id, req.body);
+    if (!checkValidIdLength === 24) {
+      throw new Error(errorMessages.provideValidId);
+    }
+
+    if (!validateoperation(req.body, ["description", "completed"])) {
+      throw new Error(errorMessages.inValidUpdates);
+    }
+
+    const task = await patchTask(taskId, ownerId, req.body);
     if (!task) {
-      throw new Error({ message: errorMessages.notFound });
+      throw new Error(errorMessages.notFound);
     }
 
     res.send(task);
   } catch (e) {
-    console.log(e);
-    res.status(400).send(e);
+    console.log(e.message);
+    const { message } = e;
+    res.status(400).send({ message, status: 400 });
   }
 });
 
-taskRouter.delete("/:id", async (req, res) => {
+taskRouter.delete("/:id", auth, async (req, res) => {
   const taskId = req.params.id;
-  if (taskId.lenght !== 24) {
-    throw new Error({ message: errorMessages.ProvideValidId });
-  }
+  const ownerId = req.user._id;
 
   try {
-    const task = await deleteTask(taskId);
+    if (!checkValidIdLength === 24) {
+      throw new Error(errorMessages.provideValidId);
+    }
+
+    const task = await deleteTask(taskId, ownerId);
     if (!task) {
-      throw new Error({ message: errorMessages.notFound });
+      throw new Error(errorMessages.notFound);
     }
     res.send(task);
   } catch (e) {
-    console.log(e);
-    res.status(500).send();
+    console.log(e.message);
+    const { message } = e;
+    res.status(500).send({ message, status: 500 });
   }
 });

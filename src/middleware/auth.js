@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { errorMessages } from "../errorMessages.js";
 import { User } from "../models/user.js";
 
 export const auth = async (req, res, next) => {
@@ -11,14 +12,15 @@ export const auth = async (req, res, next) => {
     });
 
     if (!user) {
-      throw new Error();
+      throw new Error(errorMessages.pleaseAuth);
     }
 
     req.token = token;
     req.user = user;
     next();
   } catch (e) {
-    console.log(e);
-    res.status(401).send({ error: "Please authenticate" });
+    console.log(e.message);
+    const { message } = e;
+    res.status(401).send({ message, status: 401 });
   }
 };

@@ -19,7 +19,7 @@ export const auth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (e) {
-    console.log(e.message);
+    console.log(e);
     const { message } = e;
     res.status(401).send({ message, status: 401 });
   }

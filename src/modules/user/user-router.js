@@ -10,7 +10,7 @@ userRouter.post("/", async (req, res) => {
     const user = await postUser(req.body);
     const token = await user.generateAuthToken();
 
-    res.status(201).send({ user, token });
+    res.status(201).send({ data: { user, token } });
   } catch (e) {
     console.log(e);
     res.status(400).send(e);
@@ -21,7 +21,7 @@ userRouter.post("/login", async (req, res) => {
   try {
     const user = await userLogin(req.body.email, req.body.password);
     const token = await user.generateAuthToken();
-    res.send({ user, token });
+    res.send({ data: { user, token } });
   } catch (e) {
     console.log(e);
     res.status(400).send();
@@ -53,7 +53,7 @@ userRouter.post("/logoutAll", auth, async (req, res) => {
 });
 
 userRouter.get("/me", auth, async (req, res) => {
-  res.send(req.user);
+  res.send({ data: req.user });
 });
 
 userRouter.patch("/me", auth, async (req, res) => {
@@ -63,7 +63,7 @@ userRouter.patch("/me", auth, async (req, res) => {
     }
 
     const user = await patchUser(req.user, req.body);
-    res.send(user);
+    res.send({ data: user });
   } catch (e) {
     console.log(e.message);
     const { message } = e;
@@ -74,7 +74,7 @@ userRouter.patch("/me", auth, async (req, res) => {
 userRouter.delete("/me", auth, async (req, res) => {
   try {
     await req.user.remove();
-    res.send(req.user);
+    res.send({ data: req.user });
   } catch (e) {
     console.log(e);
     res.status(500).send();

@@ -14,7 +14,7 @@ export const taskRouter = new express.Router();
 taskRouter.post("/", auth, (req, res) => {
   try {
     const task = postTask(req.body, req.user._id);
-    res.status(201).send(task);
+    res.status(201).send({ data: task });
   } catch (e) {
     console.log(e);
     res.status(400).send(e);
@@ -24,7 +24,7 @@ taskRouter.post("/", auth, (req, res) => {
 taskRouter.get("/all", auth, async (req, res) => {
   try {
     const tasks = await getTasks(req.user._id);
-    res.send(tasks);
+    res.send({ data: tasks });
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
@@ -34,7 +34,6 @@ taskRouter.get("/all", auth, async (req, res) => {
 taskRouter.get("/:id", auth, async (req, res) => {
   const ownerId = req.user._id;
   const taskId = req.params.id;
-  console.log(req.params.id.length);
   try {
     if (!checkValidIdLength === 24) {
       throw new Error(errorMessages.provideValidId);
@@ -44,7 +43,7 @@ taskRouter.get("/:id", auth, async (req, res) => {
     if (!task) {
       throw new Error(errorMessages.notFound);
     }
-    res.send({ data: task, count: task.length });
+    res.send({ data: task });
   } catch (e) {
     console.log(e.message);
     const { message } = e;
@@ -69,7 +68,7 @@ taskRouter.patch("/:id", auth, async (req, res) => {
       throw new Error(errorMessages.notFound);
     }
 
-    res.send(task);
+    res.send({ data: task });
   } catch (e) {
     console.log(e.message);
     const { message } = e;
@@ -90,7 +89,7 @@ taskRouter.delete("/:id", auth, async (req, res) => {
     if (!task) {
       throw new Error(errorMessages.notFound);
     }
-    res.send(task);
+    res.send({ data: task });
   } catch (e) {
     console.log(e.message);
     const { message } = e;

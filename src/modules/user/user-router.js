@@ -1,91 +1,82 @@
-import express from 'express'
-import { postUser, getUsers, getUser, patchUser, deleteUser, userLogin } from './user-service.js'
-import { checkValidIdLength, validateoperation } from '../../helper.js'
-import { auth } from '../../middleware/auth.js'
-import { User } from '../../models/user.js'
-export const userRouter = new express.Router()
+import express from "express";
+import { postUser, patchUser, userLogin } from "./user-service.js";
+import { validateoperation } from "../../helper.js";
+import { auth } from "../../middleware/auth.js";
+import { errorMessages } from "../../errorMessages.js";
+export const userRouter = new express.Router();
 
-userRouter.post('/', async (req, res) => {   
-    try {
-        const user = await postUser(req.body)
-        const token = await user.generateAuthToken()
+userRouter.post("/", async (req, res) => {
+  try {
+    const user = await postUser(req.body);
+    const token = await user.generateAuthToken();
 
-        res.status(201).send({user, token})
-    } catch(e) {
-        res.status(400).send(e)
-    }
-})
+    res.status(201).send({ data: { user, token } });
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
+  }
+});
 
-userRouter.post('/login', async (req, res) => {
+userRouter.post("/login", async (req, res) => {
+  try {
+    const user = await userLogin(req.body.email, req.body.password);
+    const token = await user.generateAuthToken();
+    res.send({ data: { user, token } });
+  } catch (e) {
+    console.log(e);
+    res.status(400).send();
+  }
+});
 
-    try {
-        const user = await userLogin(req.body.email, req.body.password)
-        const token = await user.generateAuthToken()
-        res.send({user, token})
-    } catch (e) {
-        res.status(400).send()
-    }
-})
+userRouter.post("/logout", auth, async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter((token) => {
+      return token.token != req.token;
+    });
+    await req.user.save();
+    res.send();
+  } catch (e) {
+    console.log(e);
+    res.status(500).send();
+  }
+});
 
-userRouter.get('/me', auth, async (req, res) => {
-    res.send(req.user)
-})
+userRouter.post("/logoutAll", auth, async (req, res) => {
+  try {
+    req.user.tokens = [];
+    await req.user.save();
+    res.send();
+  } catch (e) {
+    console.log(e);
+    res.status(500).send();
+  }
+});
 
-userRouter.get('/:id', async (req, res) => {
-    const checkID = checkValidIdLength(req.params.id)
-    if (!checkID) {
-        return res.send({message: 'Id length must be 24'})
-    }
-    try {
-        const user = await getUser(req.params.id)
-        if (!user) {
-            return res.status(404).send({message: 'Not found'})
-        }
-        res.send(user)
-    } catch (e) {
-        console.log(e)
-        res.status(500).send()
-    }
-})
+userRouter.get("/me", auth, async (req, res) => {
+  res.send({ data: req.user });
+});
 
-userRouter.patch('/:id', async (req, res) => {
-
-    const checkID = checkValidIdLength(req.params.id)
-    if (!checkID) {
-        return res.send({message: 'Id length must be 24'})
-    }
-
-    const validOperation =  validateoperation(req.body, ['name', 'email', 'password', 'age'])
-    if (!validOperation) {
-        return res.status(400).send({error : 'Invalid updates'})
-    }
-    
-    try {
-        const user = await patchUser(req.params.id, req.body)
-        if (!user) {
-            res.status(404).send({message: 'Not found'})
-        }
-        res.send(user)
-    } catch (e) {
-        res.status(400).send(e)
-    }
-})
-
-userRouter.delete('/:id', async (req,res) => {
-    const checkID = checkValidIdLength(req.params.id)
-    if (!checkID) {
-        return res.send({message: 'Id length must be 24'})
+userRouter.patch("/me", auth, async (req, res) => {
+  try {
+    if (!validateoperation(req.body, ["name", "email", "password", "age"])) {
+      throw new Error(errorMessages.inValidUpdates);
     }
 
-    try {
-        const user = await deleteUser(req.params.id)
-        if(!user) {
-            return res.status(400).send({message: 'Not found'})
-        }
+    const user = await patchUser(req.user, req.body);
+    res.send({ data: user });
+  } catch (e) {
+    console.log(e.message);
+    const { message } = e;
+    res.status(400).send({ message, status: 400 });
+  }
+});
 
-        res.send(user)
-    } catch (e) {
-        console.log(e)
-        res.status(500).send()
-    }
-})
+userRouter.delete("/me", auth, async (req, res) => {
+  try {
+    await req.user.remove();
+    res.send({ data: req.user });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send();
+  }
+});

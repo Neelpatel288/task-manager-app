@@ -1,34 +1,30 @@
-import { Task  } from '../../models/task.js'
+import { Task } from "../../models/task.js";
 
-export const postTask = (body) => {
-    const task = new Task(body)
-    task.save()
-    return task
-}
+export const postTask = async (body, id) => {
+  const task = await Task.create({
+    ...body,
+    owner: id,
+  });
+  return task;
+};
 
-export const getTasks = () => {
-    const tasks = Task.find({})
-    return tasks
-}
+export const getTask = (_id, owner) => {
+  const task = Task.findOne({ _id, owner });
+  return task;
+};
 
-export const getTask = (id) => {
-    const task = Task.findById(id)
-    return task
-}
+export const patchTask = async (_id, owner, body) => {
+  const Updates = Object.keys(body);
+  let task = await Task.findOne({ _id, owner });
 
-export const patchTask = async (id, body) => {
-    const Updates = Object.keys(body)
-    let task = await Task.findById(id)
-    console.log("🚀 ~ file: task-service.js:22 ~ patchTask ~ task", task)
+  Updates.forEach((update) => (task[update] = body[update]));
 
-    Updates.forEach((update) => task[update] = body[update])
+  task = await task.save();
 
-    task = await task.save()
+  return task;
+};
 
-    return task
-}
-
-export const deleteTask = (id) => {
-    const task = Task.findByIdAndDelete(id)
-    return task
-}
+export const deleteTask = (_id, owner) => {
+  const task = Task.findOneAndDelete({ _id, owner });
+  return task;
+};
